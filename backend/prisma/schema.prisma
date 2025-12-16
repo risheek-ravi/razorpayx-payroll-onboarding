@@ -1,0 +1,54 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Business {
+  id            String        @id @default(uuid())
+  name          String
+  businessName  String
+  businessEmail String        @unique
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  salaryConfig  SalaryConfig?
+  employees     Employee[]
+}
+
+model SalaryConfig {
+  id                String   @id @default(uuid())
+  calculationMethod String   // 'calendar_month' | 'fixed_30_days' | 'exclude_weekly_offs'
+  shiftHours        Int      @default(8)
+  shiftMinutes      Int      @default(0)
+
+  businessId        String   @unique
+  business          Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+}
+
+model Employee {
+  id              String   @id @default(uuid())
+  type            String   // 'full_time' | 'contract'
+  fullName        String
+  companyId       String
+  phoneNumber     String
+  dob             String
+  gender          String
+  salaryCycleDate Int
+  salaryAccess    String
+  wageType        String?  // 'Monthly' | 'Daily' | 'Per Hour Basis'
+  salaryAmount    String?
+  weeklyOffs      String   @default("[]") // JSON array stored as string
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  businessId      String
+  business        Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([businessId])
+}
+
+
