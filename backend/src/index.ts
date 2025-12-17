@@ -25,14 +25,14 @@ app.use('/api/v1/shifts', shiftRouter);
 // Error handling
 app.use(errorHandler);
 
-// For local development
-if (process.env.NODE_ENV !== 'production') {
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`🚀 Server running on http://0.0.0.0:${PORT}`);
-    console.log(`📊 API available at http://localhost:${PORT}/api/v1`);
+// Start server (both development and production)
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Server running on http://0.0.0.0:${PORT}`);
+  console.log(`📊 API available at http://localhost:${PORT}/api/v1`);
+  if (process.env.NODE_ENV !== 'production') {
     console.log(`📱 Android emulator: http://10.0.2.2:${PORT}/api/v1`);
-  });
-}
+  }
+});
 
 // Export for Vercel serverless
 export default app;
