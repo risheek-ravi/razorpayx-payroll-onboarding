@@ -76,7 +76,7 @@ if [ ! -z "$BUSINESS_ID" ]; then
         "salaryAccess": "full",
         "wageType": "Monthly",
         "salaryAmount": "50000",
-        "weeklyOffs": "[]",
+        "weeklyOffs": [],
         "businessId": "'$BUSINESS_ID'"
       }')
     
