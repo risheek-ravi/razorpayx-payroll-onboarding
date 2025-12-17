@@ -22,9 +22,16 @@ app.get('/health', (_req, res) => {
 app.get('/health/db', async (_req, res) => {
   try {
     await prisma.$queryRaw`SELECT 1`;
+    
+    // Check if tables exist
+    const businessCount = await prisma.business.count();
+    
     res.json({
       status: 'ok',
       database: 'connected',
+      tables: {
+        businesses: businessCount,
+      },
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
@@ -33,7 +40,38 @@ app.get('/health/db', async (_req, res) => {
       status: 'error',
       database: 'disconnected',
       error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
       timestamp: new Date().toISOString(),
+    });
+  }
+});
+
+// Debug endpoint to test business creation
+app.post('/debug/business', async (req, res) => {
+  try {
+    console.log('[Debug] Creating business with data:', req.body);
+    
+    const business = await prisma.business.create({
+      data: {
+        name: req.body.name || 'Debug User',
+        businessName: req.body.businessName || 'Debug Company',
+        businessEmail: req.body.businessEmail || `debug${Date.now()}@test.com`,
+      },
+    });
+    
+    console.log('[Debug] Business created successfully:', business);
+    
+    res.json({
+      success: true,
+      data: business,
+    });
+  } catch (error) {
+    console.error('[Debug] Error creating business:', error);
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      name: error instanceof Error ? error.name : undefined,
     });
   }
 });
