@@ -8,7 +8,7 @@ cmds = ["yarn install --frozen-lockfile"]
 cmds = ["npx prisma generate", "yarn build"]
 
 [start]
-cmd = "npx prisma db push --accept-data-loss && node dist/index.js"
+cmd = "mkdir -p prisma && npx prisma db push --accept-data-loss && node dist/index.js"
 
 [variables]
 PRISMA_CLI_BINARY_TARGETS = "debian-openssl-3.0.x"
