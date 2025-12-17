@@ -4,6 +4,7 @@ import {businessRouter} from './routes/business.js';
 import {employeeRouter} from './routes/employee.js';
 import {shiftRouter} from './routes/shift.js';
 import {errorHandler} from './middleware/errorHandler.js';
+import {prisma} from './lib/prisma.js';
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3001;
@@ -15,6 +16,26 @@ app.use(express.json());
 // Health check
 app.get('/health', (_req, res) => {
   res.json({status: 'ok', timestamp: new Date().toISOString()});
+});
+
+// Database health check
+app.get('/health/db', async (_req, res) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    res.json({
+      status: 'ok',
+      database: 'connected',
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error('[DB Health Check Error]', error);
+    res.status(500).json({
+      status: 'error',
+      database: 'disconnected',
+      error: error instanceof Error ? error.message : 'Unknown error',
+      timestamp: new Date().toISOString(),
+    });
+  }
 });
 
 // Routes

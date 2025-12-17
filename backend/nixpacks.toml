@@ -2,10 +2,10 @@
 nixPkgs = ["nodejs_20", "openssl", "openssl.dev"]
 
 [phases.install]
-cmds = ["npm ci"]
+cmds = ["yarn install --frozen-lockfile"]
 
 [phases.build]
-cmds = ["npx prisma generate", "npm run build"]
+cmds = ["npx prisma generate", "yarn build"]
 
 [start]
 cmd = "npx prisma db push --accept-data-loss && node dist/index.js"
