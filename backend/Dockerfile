@@ -1,32 +1,36 @@
-# Dockerfile for deploying to Fly.io, DigitalOcean, or any container platform
+# Use Debian-based Node.js image (better OpenSSL compatibility than Alpine)
+FROM node:20-bookworm-slim
 
-FROM node:20-alpine
+# Install OpenSSL and other dependencies
+RUN apt-get update -y && \
+    apt-get install -y openssl ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
 
 # Set working directory
 WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
-COPY yarn.lock ./
+COPY yarn.lock* ./
 
 # Install dependencies
-RUN yarn install --frozen-lockfile
+RUN npm ci --only=production
 
 # Copy source code
 COPY . .
 
-# Generate Prisma client
+# Generate Prisma client with correct binary target
 RUN npx prisma generate
 
 # Build TypeScript
-RUN yarn build
+RUN npm run build
 
-# Expose port
+# Expose port (Railway will override this)
 EXPOSE 3001
 
 # Set environment to production
 ENV NODE_ENV=production
 
-# Start the application
-CMD ["node", "dist/index.js"]
+# Start the application with database initialization
+CMD npx prisma db push --accept-data-loss && node dist/index.js
 
