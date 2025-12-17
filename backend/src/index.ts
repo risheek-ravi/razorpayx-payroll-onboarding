@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import {businessRouter} from './routes/business.js';
 import {employeeRouter} from './routes/employee.js';
+import {shiftRouter} from './routes/shift.js';
 import {errorHandler} from './middleware/errorHandler.js';
 
 const app = express();
@@ -19,12 +20,19 @@ app.get('/health', (_req, res) => {
 // Routes
 app.use('/api/v1/businesses', businessRouter);
 app.use('/api/v1/employees', employeeRouter);
+app.use('/api/v1/shifts', shiftRouter);
 
 // Error handling
 app.use(errorHandler);
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 Server running on http://0.0.0.0:${PORT}`);
-  console.log(`📊 API available at http://localhost:${PORT}/api/v1`);
-  console.log(`📱 Android emulator: http://10.0.2.2:${PORT}/api/v1`);
-});
+// For local development
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 Server running on http://0.0.0.0:${PORT}`);
+    console.log(`📊 API available at http://localhost:${PORT}/api/v1`);
+    console.log(`📱 Android emulator: http://10.0.2.2:${PORT}/api/v1`);
+  });
+}
+
+// Export for Vercel serverless
+export default app;

@@ -1,14 +1,28 @@
 import {Platform} from 'react-native';
-import {BusinessDetails, SalaryConfig, StaffType, Employee} from '../types';
+import {
+  BusinessDetails,
+  SalaryConfig,
+  StaffType,
+  Employee,
+  Shift,
+  ShiftWithStaffCount,
+  PayrollUsageType,
+} from '../types';
 
-// For Android emulator, use 10.0.2.2 to access host machine's localhost
-// For iOS simulator, localhost works fine
-// For physical devices, use your computer's local IP address (e.g., 192.168.x.x)
+// API Base URL Configuration
+// Development: Use localhost (iOS) or 10.0.2.2 (Android emulator)
+// Production: Use Railway deployment URL
 const getApiBase = () => {
-  if (Platform.OS === 'android') {
-    return 'http://10.0.2.2:3001/api/v1';
+  if (__DEV__) {
+    // Development mode - local backend
+    if (Platform.OS === 'android') {
+      return 'http://10.0.2.2:3001/api/v1';
+    }
+    return 'http://localhost:3001/api/v1';
   }
-  return 'http://localhost:3001/api/v1';
+
+  // Production mode - Railway deployment
+  return 'https://laudable-sparkle-production-8104.up.railway.app/api/v1';
 };
 
 const API_BASE = getApiBase();
@@ -105,4 +119,266 @@ export const getEmployees = async (
 ): Promise<Employee[]> => {
   const query = businessId ? `?businessId=${businessId}` : '';
   return api.get<Employee[]>(`/employees${query}`);
+};
+
+/**
+ * Updates an existing employee record
+ */
+export const updateEmployee = async (employee: Employee): Promise<Employee> => {
+  return api.patch<Employee>(`/employees/${employee.id}`, employee);
+};
+
+/**
+ * Updates the payroll usage type preference for a business
+ */
+export const updatePayrollUsage = async (
+  id: string,
+  usageType: PayrollUsageType,
+): Promise<void> => {
+  await api.patch(`/businesses/${id}/usage-type`, {
+    payrollUsageType: usageType,
+  });
+};
+
+// ==================== SHIFT OPERATIONS ====================
+
+/**
+ * Gets all shifts with staff count
+ */
+export const getShifts = async (): Promise<ShiftWithStaffCount[]> => {
+  return api.get<ShiftWithStaffCount[]>('/shifts');
+};
+
+/**
+ * Creates a new shift record
+ */
+export const saveShift = async (
+  shiftData: Omit<Shift, 'id' | 'createdAt'>,
+): Promise<Shift> => {
+  return api.post<Shift>('/shifts', shiftData);
+};
+
+/**
+ * Updates an existing shift
+ */
+export const updateShift = async (shiftData: Shift): Promise<Shift> => {
+  return api.patch<Shift>(`/shifts/${shiftData.id}`, shiftData);
+};
+
+/**
+ * Assigns a shift to multiple employees
+ */
+export const assignShiftToEmployees = async (
+  shiftId: string,
+  employeeIds: string[],
+): Promise<void> => {
+  await api.post(`/shifts/${shiftId}/assign`, {employeeIds});
+};
+
+/**
+ * Updates shift assignment (replaces all assignments)
+ */
+export const updateShiftAssignment = async (
+  shiftId: string,
+  employeeIds: string[],
+): Promise<void> => {
+  await api.patch(`/shifts/${shiftId}/assign`, {employeeIds});
+};
+
+// ==================== RAZORPAY PAYOUT OPERATIONS ====================
+
+interface RazorpayPayoutRequest {
+  account_number: string;
+  amount: number;
+  currency: string;
+  mode: 'UPI' | 'NEFT' | 'RTGS' | 'IMPS';
+  purpose: string;
+  fund_account: {
+    account_type: 'bank_account' | 'vpa' | 'mobile';
+    bank_account?: {
+      name: string;
+      ifsc: string;
+      account_number: string;
+    };
+    vpa?: {
+      address: string;
+    };
+    mobile?: {
+      number: string;
+      account_holder_name: string;
+    };
+    contact: {
+      name: string;
+      email?: string;
+      contact: string;
+      type: 'self' | 'employee' | 'vendor' | 'customer';
+      reference_id?: string;
+      notes?: Record<string, string>;
+    };
+  };
+  queue_if_low_balance?: boolean;
+  reference_id?: string;
+  narration?: string;
+  notes?: Record<string, string>;
+}
+
+interface RazorpayPayoutResponse {
+  id: string;
+  entity: string;
+  fund_account_id: string;
+  amount: number;
+  currency: string;
+  notes: Record<string, string>;
+  fees: number;
+  tax: number;
+  status: string;
+  purpose: string;
+  utr: string | null;
+  mode: string;
+  reference_id: string;
+  narration: string;
+  batch_id: string | null;
+  failure_reason: string | null;
+  created_at: number;
+}
+
+/**
+ * Creates a Razorpay payout
+ * @param apiKey - Razorpay API Key (e.g., rzp_live_Rsfw3YyUA3HgRo)
+ * @param apiSecret - Razorpay API Secret
+ * @param payoutData - Payout request data
+ * @returns Payout response from Razorpay
+ */
+export const createRazorpayPayout = async (
+  apiKey: string,
+  apiSecret: string,
+  payoutData: RazorpayPayoutRequest,
+): Promise<RazorpayPayoutResponse> => {
+  const credentials = `${apiKey}:${apiSecret}`;
+  const encodedCredentials = btoa(credentials);
+
+  // Generate a unique idempotency key
+  const idempotencyKey = `${Date.now()}-${Math.random()
+    .toString(36)
+    .substring(7)}`;
+
+  const response = await fetch('https://api.razorpay.com/v1/payouts', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Basic ${encodedCredentials}`,
+      'X-Payout-Idempotency': idempotencyKey,
+    },
+    body: JSON.stringify(payoutData),
+  });
+
+  const json = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      json.error?.description || `Razorpay API Error: ${response.statusText}`,
+    );
+  }
+
+  return json;
+};
+
+/**
+ * Helper function to create a UPI payout
+ */
+export const createUPIPayout = async (
+  apiKey: string,
+  apiSecret: string,
+  params: {
+    accountNumber: string;
+    amount: number;
+    upiId: string;
+    accountHolderName: string;
+    contactName: string;
+    contactEmail?: string;
+    contactPhone: string;
+    referenceId?: string;
+    narration?: string;
+    notes?: Record<string, string>;
+  },
+): Promise<RazorpayPayoutResponse> => {
+  const payoutData: RazorpayPayoutRequest = {
+    account_number: params.accountNumber,
+    amount: params.amount * 100, // Convert to paise
+    currency: 'INR',
+    mode: 'UPI',
+    purpose: 'salary',
+    fund_account: {
+      account_type: 'vpa',
+      vpa: {
+        address: params.upiId,
+      },
+      contact: {
+        name: params.contactName,
+        email: params.contactEmail,
+        contact: params.contactPhone,
+        type: 'employee',
+        reference_id: params.referenceId,
+        notes: params.notes,
+      },
+    },
+    queue_if_low_balance: true,
+    reference_id: params.referenceId,
+    narration: params.narration || 'Salary Payment',
+    notes: params.notes,
+  };
+
+  return createRazorpayPayout(apiKey, apiSecret, payoutData);
+};
+
+/**
+ * Helper function to create a Bank Transfer payout
+ */
+export const createBankPayout = async (
+  apiKey: string,
+  apiSecret: string,
+  params: {
+    accountNumber: string;
+    amount: number;
+    beneficiaryName: string;
+    beneficiaryAccountNumber: string;
+    ifscCode: string;
+    contactName: string;
+    contactEmail?: string;
+    contactPhone: string;
+    mode?: 'NEFT' | 'RTGS' | 'IMPS';
+    referenceId?: string;
+    narration?: string;
+    notes?: Record<string, string>;
+  },
+): Promise<RazorpayPayoutResponse> => {
+  const payoutData: RazorpayPayoutRequest = {
+    account_number: params.accountNumber,
+    amount: params.amount * 100, // Convert to paise
+    currency: 'INR',
+    mode: params.mode || 'IMPS',
+    purpose: 'salary',
+    fund_account: {
+      account_type: 'bank_account',
+      bank_account: {
+        name: params.beneficiaryName,
+        ifsc: params.ifscCode,
+        account_number: params.beneficiaryAccountNumber,
+      },
+      contact: {
+        name: params.contactName,
+        email: params.contactEmail,
+        contact: params.contactPhone,
+        type: 'employee',
+        reference_id: params.referenceId,
+        notes: params.notes,
+      },
+    },
+    queue_if_low_balance: true,
+    reference_id: params.referenceId,
+    narration: params.narration || 'Salary Payment',
+    notes: params.notes,
+  };
+
+  return createRazorpayPayout(apiKey, apiSecret, payoutData);
 };

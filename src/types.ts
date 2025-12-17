@@ -15,13 +15,31 @@ export interface SalaryConfig {
   };
 }
 
+export type PayrollUsageType = 'calculate_only' | 'calculate_and_pay';
+
 export interface BusinessDetails {
   id: string;
   name: string;
   businessName: string;
   businessEmail: string;
   salaryConfig?: SalaryConfig;
+  payrollUsageType?: PayrollUsageType;
   createdAt: number;
+}
+
+export interface PaymentDetails {
+  upiId?: string;
+  accountHolderName?: string;
+  ifsc?: string;
+  accountNumber?: string;
+  paymentMode?: 'NEFT' | 'IMPS';
+}
+
+export interface ProfessionalDetails {
+  designation?: string;
+  department?: string;
+  dateOfJoining?: string;
+  pfNumber?: string;
 }
 
 export interface Employee {
@@ -35,10 +53,47 @@ export interface Employee {
   gender: string;
   salaryCycleDate: number;
   salaryAccess: string;
-  wageType?: 'Monthly' | 'Daily' | 'Per Hour Basis';
+  wageType?: 'Monthly' | 'Daily' | 'Hourly';
   salaryAmount?: string;
   weeklyOffs?: string[];
+  shiftId?: string;
   createdAt: number;
+  paymentDetails?: PaymentDetails;
+  professionalDetails?: ProfessionalDetails;
+}
+
+export type ShiftType = 'fixed' | 'open' | 'rotational';
+
+export interface Shift {
+  id: string;
+  name: string;
+  type: ShiftType;
+  startTime: string;
+  endTime: string;
+  breakMinutes: number;
+  createdAt?: number;
+}
+
+export interface ShiftWithStaffCount extends Shift {
+  staffCount: number;
+}
+
+export interface PayrollAdjustment {
+  id: string;
+  type: 'addition' | 'deduction';
+  label: string;
+  amount: number;
+}
+
+export interface PayrollEntry {
+  employeeId: string;
+  employeeName: string;
+  wageType: 'Monthly' | 'Daily' | 'Hourly';
+  baseAmount: number;
+  adjustments: PayrollAdjustment[];
+  netPay: number;
+  paymentMode: 'UPI' | 'Bank';
+  status: 'pending' | 'ready' | 'missing_details';
 }
 
 export type InputName = 'name' | 'businessName' | 'businessEmail';
@@ -49,6 +104,10 @@ export type StaffType = 'full_time' | 'contract';
 export type RootStackParamList = {
   BusinessDetails: undefined;
   SalaryCalculation: undefined;
+  UsageSelection: {
+    adminName: string;
+    businessId: string;
+  };
   Dashboard: {
     businessName: string;
     businessId: string;
@@ -63,5 +122,16 @@ export type RootStackParamList = {
   AddGeneralInfo: {
     staffData: Partial<Employee>;
   };
+  ShiftList: undefined;
+  AddFixedShift: {
+    editingShift?: Shift;
+  };
+  AssignShift: {
+    shiftData: Omit<Shift, 'id'> | Shift;
+    existingShiftId?: string;
+  };
+  StaffProfile: {
+    employee: Employee;
+  };
+  FinalizePayroll: undefined;
 };
-

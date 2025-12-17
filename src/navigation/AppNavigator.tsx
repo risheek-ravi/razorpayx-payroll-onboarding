@@ -12,6 +12,12 @@ import {DashboardScreen} from '../screens/DashboardScreen';
 import {AddStaffScreen} from '../screens/AddStaffScreen';
 import {AddSalaryScreen} from '../screens/AddSalaryScreen';
 import {AddGeneralInfoScreen} from '../screens/AddGeneralInfoScreen';
+import {ShiftListScreen} from '../screens/ShiftListScreen';
+import {AddFixedShiftScreen} from '../screens/AddFixedShiftScreen';
+import {AssignShiftScreen} from '../screens/AssignShiftScreen';
+import {UsageSelectionScreen} from '../screens/UsageSelectionScreen';
+import {StaffProfileScreen} from '../screens/StaffProfileScreen';
+import {FinalizePayrollScreen} from '../screens/FinalizePayrollScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -23,6 +29,7 @@ const AuthStack = () => (
     }}>
     <Stack.Screen name="BusinessDetails" component={BusinessDetailsScreen} />
     <Stack.Screen name="SalaryCalculation" component={SalaryScreen} />
+    <Stack.Screen name="UsageSelection" component={UsageSelectionScreen} />
   </Stack.Navigator>
 );
 
@@ -47,6 +54,14 @@ const MainStack = () => {
       <Stack.Screen name="AddStaff" component={AddStaffScreen} />
       <Stack.Screen name="AddSalary" component={AddSalaryScreen} />
       <Stack.Screen name="AddGeneralInfo" component={AddGeneralInfoScreen} />
+      {/* Shift Management Screens */}
+      <Stack.Screen name="ShiftList" component={ShiftListScreen} />
+      <Stack.Screen name="AddFixedShift" component={AddFixedShiftScreen} />
+      <Stack.Screen name="AssignShift" component={AssignShiftScreen} />
+      {/* Staff & Payroll Screens */}
+      <Stack.Screen name="StaffProfile" component={StaffProfileScreen} />
+      <Stack.Screen name="FinalizePayroll" component={FinalizePayrollScreen} />
+      <Stack.Screen name="UsageSelection" component={UsageSelectionScreen} />
       {/* Allow navigating back to these if needed */}
       <Stack.Screen name="BusinessDetails" component={BusinessDetailsScreen} />
       <Stack.Screen name="SalaryCalculation" component={SalaryScreen} />
