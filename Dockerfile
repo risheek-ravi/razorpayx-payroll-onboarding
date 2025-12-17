@@ -9,18 +9,18 @@ RUN apt-get update -y && \
     apt-get install -y openssl ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
-# Set working directory
-WORKDIR /app
+# Set working directory to backend
+WORKDIR /app/backend
 
 # Copy backend package files
-COPY backend/package*.json ./
-COPY backend/yarn.lock* ./
+COPY ./backend/package*.json ./
+COPY ./backend/yarn.lock* ./
 
 # Install dependencies
 RUN npm ci --only=production
 
-# Copy backend source code
-COPY backend/ ./
+# Copy entire backend directory
+COPY ./backend ./
 
 # Generate Prisma client with correct binary target
 RUN npx prisma generate
