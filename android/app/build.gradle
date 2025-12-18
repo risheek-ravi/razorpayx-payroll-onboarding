@@ -22,11 +22,6 @@ react {
     /* Hermes Commands */
     // hermesCommand = "$rootDir/my-custom-hermesc/bin/hermesc"
     // hermesFlags = ["-O", "-output-source-map"]
-    //
-    // Added by install-expo-modules
-    entryFile = file(["node", "-e", "require('expo/scripts/resolveAppEntry')", rootDir.getAbsoluteFile().getParentFile().getAbsolutePath(), "android", "absolute"].execute(null, rootDir).text.trim())
-    cliFile = new File(["node", "--print", "require.resolve('@expo/cli')"].execute(null, rootDir).text.trim())
-    bundleCommand = "export:embed"
 }
 
 def enableProguardInReleaseBuilds = false
@@ -38,6 +33,12 @@ android {
     compileSdk rootProject.ext.compileSdkVersion
 
     namespace "com.razorpayx.payroll"
+    
+    // Disable PNG crunching to avoid resource compilation issues
+    aaptOptions {
+        cruncherEnabled = false
+    }
+    
     defaultConfig {
         applicationId "com.razorpayx.payroll"
         minSdkVersion rootProject.ext.minSdkVersion

@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Modal,
-} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, Modal} from 'react-native';
 import {PayrollUsageType} from '../types';
 
 interface UsageTypeModalProps {
@@ -84,10 +78,7 @@ const ModalOption: React.FC<ModalOptionProps> = ({
   return (
     <TouchableOpacity
       onPress={onSelect}
-      style={[
-        styles.optionCard,
-        isSelected && styles.optionCardSelected,
-      ]}>
+      style={[styles.optionCard, isSelected && styles.optionCardSelected]}>
       <View style={styles.optionContent}>
         <View style={styles.optionIcon}>
           <Text style={styles.optionIconText}>{icon}</Text>
@@ -217,4 +208,3 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
-

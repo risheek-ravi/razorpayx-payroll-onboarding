@@ -18,6 +18,7 @@ model Business {
 
   salaryConfig  SalaryConfig?
   employees     Employee[]
+  payments      Payment[]
 }
 
 model SalaryConfig {
@@ -52,6 +53,8 @@ model Employee {
   shiftId         String?
   shift           Shift?   @relation(fields: [shiftId], references: [id], onDelete: SetNull)
 
+  payments        Payment[]
+
   @@index([businessId])
   @@index([shiftId])
 }
@@ -69,5 +72,29 @@ model Shift {
   employees     Employee[]
 }
 
+model Payment {
+  id                String   @id @default(uuid())
+  type              String   // 'one-time' | 'advance' | 'salary'
+  amount            Float
+  paymentMode       String   // 'Cash' | 'UPI' | 'Bank Transfer'
+  phoneNumber       String?  // Phone number for UPI/Bank Transfer
+  upiId             String?  // UPI ID for UPI payments
+  narration         String?  // Optional description/reason
+  status            String   @default("completed") // 'pending' | 'completed' | 'failed'
+  date              String   // Formatted date string
+  razorpayPayoutId  String?  // Razorpay payout transaction ID
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
+  employeeId        String
+  employee          Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  businessId        String
+  business          Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([employeeId])
+  @@index([businessId])
+  @@index([type])
+  @@index([status])
+}
 

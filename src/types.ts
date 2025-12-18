@@ -92,8 +92,26 @@ export interface PayrollEntry {
   baseAmount: number;
   adjustments: PayrollAdjustment[];
   netPay: number;
-  paymentMode: 'UPI' | 'Bank';
+  paymentMode: 'UPI' | 'Bank' | 'Cash';
   status: 'pending' | 'ready' | 'missing_details';
+}
+
+export type PaymentType = 'one-time' | 'advance' | 'salary';
+export type PaymentStatus = 'pending' | 'completed' | 'failed';
+
+export interface Payment {
+  id: string;
+  type: PaymentType;
+  amount: number;
+  paymentMode: 'Cash' | 'UPI' | 'Bank Transfer';
+  phoneNumber?: string;
+  narration?: string;
+  status: PaymentStatus;
+  date: string;
+  employeeId: string;
+  businessId: string;
+  createdAt: number;
+  updatedAt: number;
 }
 
 export type InputName = 'name' | 'businessName' | 'businessEmail';
@@ -134,4 +152,5 @@ export type RootStackParamList = {
     employee: Employee;
   };
   FinalizePayroll: undefined;
+  LoadWallet: undefined;
 };

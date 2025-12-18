@@ -3,6 +3,7 @@ import cors from 'cors';
 import {businessRouter} from './routes/business.js';
 import {employeeRouter} from './routes/employee.js';
 import {shiftRouter} from './routes/shift.js';
+import paymentRouter from './routes/payment.js';
 import {errorHandler} from './middleware/errorHandler.js';
 import {prisma} from './lib/prisma.js';
 
@@ -22,10 +23,10 @@ app.get('/health', (_req, res) => {
 app.get('/health/db', async (_req, res) => {
   try {
     await prisma.$queryRaw`SELECT 1`;
-    
+
     // Check if tables exist
     const businessCount = await prisma.business.count();
-    
+
     res.json({
       status: 'ok',
       database: 'connected',
@@ -50,7 +51,7 @@ app.get('/health/db', async (_req, res) => {
 app.post('/debug/business', async (req, res) => {
   try {
     console.log('[Debug] Creating business with data:', req.body);
-    
+
     const business = await prisma.business.create({
       data: {
         name: req.body.name || 'Debug User',
@@ -58,9 +59,9 @@ app.post('/debug/business', async (req, res) => {
         businessEmail: req.body.businessEmail || `debug${Date.now()}@test.com`,
       },
     });
-    
+
     console.log('[Debug] Business created successfully:', business);
-    
+
     res.json({
       success: true,
       data: business,
@@ -80,6 +81,7 @@ app.post('/debug/business', async (req, res) => {
 app.use('/api/v1/businesses', businessRouter);
 app.use('/api/v1/employees', employeeRouter);
 app.use('/api/v1/shifts', shiftRouter);
+app.use('/api/v1/payments', paymentRouter);
 
 // Error handling
 app.use(errorHandler);

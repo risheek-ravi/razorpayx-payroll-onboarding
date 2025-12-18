@@ -48,10 +48,13 @@ curl https://laudable-sparkle-production-8104.up.railway.app/health/db
 If Railway doesn't support volumes on your plan, you have two options:
 
 ### Option A: Use PostgreSQL Instead
+
 Railway provides free PostgreSQL databases that persist automatically.
 
 ### Option B: Deploy to Render
+
 Render supports persistent disks on the free tier:
+
 1. Go to https://render.com
 2. Create a new Web Service
 3. Add a disk at mount path `/opt/render/project/src/backend/prisma`
@@ -62,4 +65,3 @@ See `RENDER_QUICKSTART.md` for detailed Render setup instructions.
 
 - [Railway Volumes](https://docs.railway.app/reference/volumes)
 - [Persistent Storage Guide](https://docs.railway.app/guides/volumes)
-

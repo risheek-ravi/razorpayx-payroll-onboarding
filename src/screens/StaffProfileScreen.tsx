@@ -118,7 +118,10 @@ interface BasicDetailsTabProps {
   onSave: (d: Partial<Employee>) => void;
 }
 
-const BasicDetailsTab: React.FC<BasicDetailsTabProps> = ({employee, onSave}) => {
+const BasicDetailsTab: React.FC<BasicDetailsTabProps> = ({
+  employee,
+  onSave,
+}) => {
   const [formData, setFormData] = useState({
     fullName: employee.fullName,
     companyId: employee.companyId,
@@ -246,17 +249,13 @@ const ProfessionalTab: React.FC<ProfessionalTabProps> = ({data, onSave}) => {
         <InputField
           label="Designation"
           value={formData.designation}
-          onChangeText={text =>
-            setFormData(p => ({...p, designation: text}))
-          }
+          onChangeText={text => setFormData(p => ({...p, designation: text}))}
           placeholder="e.g. Senior Developer"
         />
         <InputField
           label="Department"
           value={formData.department}
-          onChangeText={text =>
-            setFormData(p => ({...p, department: text}))
-          }
+          onChangeText={text => setFormData(p => ({...p, department: text}))}
           placeholder="e.g. Engineering"
         />
         <InputField
@@ -319,9 +318,7 @@ const PaymentTab: React.FC<PaymentTabProps> = ({data, onSave}) => {
         <InputField
           label="Account Number"
           value={formData.accountNumber}
-          onChangeText={text =>
-            setFormData(p => ({...p, accountNumber: text}))
-          }
+          onChangeText={text => setFormData(p => ({...p, accountNumber: text}))}
           keyboardType="numeric"
           placeholder="0000000000"
         />
@@ -526,4 +523,3 @@ const styles = StyleSheet.create({
 });
 
 export default StaffProfileScreen;
-

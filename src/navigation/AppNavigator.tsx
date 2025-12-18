@@ -18,6 +18,7 @@ import {AssignShiftScreen} from '../screens/AssignShiftScreen';
 import {UsageSelectionScreen} from '../screens/UsageSelectionScreen';
 import {StaffProfileScreen} from '../screens/StaffProfileScreen';
 import {FinalizePayrollScreen} from '../screens/FinalizePayrollScreen';
+import {LoadWalletScreen} from '../screens/LoadWalletScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -61,6 +62,7 @@ const MainStack = () => {
       {/* Staff & Payroll Screens */}
       <Stack.Screen name="StaffProfile" component={StaffProfileScreen} />
       <Stack.Screen name="FinalizePayroll" component={FinalizePayrollScreen} />
+      <Stack.Screen name="LoadWallet" component={LoadWalletScreen} />
       <Stack.Screen name="UsageSelection" component={UsageSelectionScreen} />
       {/* Allow navigating back to these if needed */}
       <Stack.Screen name="BusinessDetails" component={BusinessDetailsScreen} />

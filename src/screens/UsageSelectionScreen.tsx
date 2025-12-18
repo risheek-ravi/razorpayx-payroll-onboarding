@@ -32,7 +32,7 @@ export const UsageSelectionScreen: React.FC<Props> = ({navigation, route}) => {
     try {
       // In a real app, save the preference to backend
       // await updatePayrollUsage(businessId, type);
-      
+
       // Navigate to Dashboard
       navigation.replace('Dashboard', {
         businessName: 'Your Business',
@@ -232,4 +232,3 @@ const styles = StyleSheet.create({
 });
 
 export default UsageSelectionScreen;
-

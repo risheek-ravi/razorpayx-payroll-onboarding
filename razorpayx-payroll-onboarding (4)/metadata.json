@@ -1,0 +1,5 @@
+{
+  "name": "RazorpayX Payroll Onboarding",
+  "description": "A mobile-first onboarding screen for capturing business details with local data persistence.",
+  "requestFramePermissions": []
+}

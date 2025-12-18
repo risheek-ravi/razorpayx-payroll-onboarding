@@ -243,6 +243,43 @@ interface RazorpayPayoutResponse {
 }
 
 /**
+ * Base64 encoding for React Native
+ * btoa is not available in React Native, so we use a polyfill
+ */
+const base64Encode = (str: string): string => {
+  // Use Buffer if available (Node.js environment)
+  if (typeof Buffer !== 'undefined') {
+    return Buffer.from(str, 'utf-8').toString('base64');
+  }
+
+  // Fallback for React Native
+  const chars =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+  let result = '';
+  let i = 0;
+
+  while (i < str.length) {
+    const a = str.charCodeAt(i++);
+    const b = i < str.length ? str.charCodeAt(i++) : Number.NaN;
+    const c = i < str.length ? str.charCodeAt(i++) : Number.NaN;
+
+    // eslint-disable-next-line no-bitwise
+    const bitmap = (a << 16) | (b << 8) | c;
+
+    // eslint-disable-next-line no-bitwise
+    result += chars.charAt((bitmap >> 18) & 63);
+    // eslint-disable-next-line no-bitwise
+    result += chars.charAt((bitmap >> 12) & 63);
+    // eslint-disable-next-line no-bitwise
+    result += isNaN(b) ? '=' : chars.charAt((bitmap >> 6) & 63);
+    // eslint-disable-next-line no-bitwise
+    result += isNaN(c) ? '=' : chars.charAt(bitmap & 63);
+  }
+
+  return result;
+};
+
+/**
  * Creates a Razorpay payout
  * @param apiKey - Razorpay API Key (e.g., rzp_live_Rsfw3YyUA3HgRo)
  * @param apiSecret - Razorpay API Secret
@@ -255,7 +292,7 @@ export const createRazorpayPayout = async (
   payoutData: RazorpayPayoutRequest,
 ): Promise<RazorpayPayoutResponse> => {
   const credentials = `${apiKey}:${apiSecret}`;
-  const encodedCredentials = btoa(credentials);
+  const encodedCredentials = base64Encode(credentials);
 
   // Generate a unique idempotency key
   const idempotencyKey = `${Date.now()}-${Math.random()
