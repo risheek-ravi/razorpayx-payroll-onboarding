@@ -20,6 +20,7 @@ import {
 } from '@razorpay/blade/components';
 import {
   getEmployees,
+  getLatestBusinessDetails,
   saveShift,
   assignShiftToEmployees,
   updateShiftAssignment,
@@ -36,10 +37,13 @@ export const AssignShiftScreen = ({navigation, route}: Props) => {
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [businessId, setBusinessId] = useState<string | undefined>();
 
   const loadEmployees = useCallback(async () => {
     try {
-      const data = await getEmployees();
+      const bizData = await getLatestBusinessDetails();
+      setBusinessId(bizData?.id);
+      const data = await getEmployees(bizData?.id);
       setEmployees(data);
 
       // If editing existing shift, pre-select employees
@@ -85,8 +89,12 @@ export const AssignShiftScreen = ({navigation, route}: Props) => {
         // Edit Mode: Just update assignments
         await updateShiftAssignment(existingShiftId, selectedIds);
       } else {
-        // Create Mode: Save new shift first
-        const savedShift = await saveShift(shiftData as Omit<Shift, 'id'>);
+        // Create Mode: Save new shift first with businessId
+        const shiftWithBusiness = {
+          ...shiftData,
+          businessId: businessId!,
+        } as Omit<Shift, 'id'>;
+        const savedShift = await saveShift(shiftWithBusiness);
         if (selectedIds.length > 0) {
           await assignShiftToEmployees(savedShift.id, selectedIds);
         }

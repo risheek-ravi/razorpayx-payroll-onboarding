@@ -9,7 +9,8 @@ import {
   Alert,
 } from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import Icon from 'react-native-vector-icons/Feather';
+import {Button, Box} from '@razorpay/blade/components';
+// Icons replaced with emoji for better compatibility
 import {colors} from '../theme/colors';
 import {RootStackParamList, Employee} from '../types';
 import {saveEmployee, getLatestBusinessDetails} from '../services/dbService';
@@ -86,7 +87,7 @@ export const AddGeneralInfoScreen = ({navigation, route}: Props) => {
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => navigation.goBack()}>
-          <Icon name="arrow-left" size={24} color={colors.gray[800]} />
+          <Text style={styles.backIcon}>←</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Add General Info</Text>
       </View>
@@ -111,12 +112,9 @@ export const AddGeneralInfoScreen = ({navigation, route}: Props) => {
               numberOfLines={1}>
               {getDisplayText()}
             </Text>
-            <Icon
-              name="chevron-down"
-              size={20}
-              color={colors.gray[400]}
-              style={[styles.chevron, isOpen && styles.chevronRotated]}
-            />
+            <Text style={[styles.chevronIcon, isOpen && styles.chevronRotated]}>
+              ▼
+            </Text>
           </TouchableOpacity>
 
           {isOpen && (
@@ -133,7 +131,7 @@ export const AddGeneralInfoScreen = ({navigation, route}: Props) => {
                       selectedDays.includes(day) && styles.checkboxSelected,
                     ]}>
                     {selectedDays.includes(day) && (
-                      <Icon name="check" size={14} color={colors.white} />
+                      <Text style={styles.checkIcon}>✓</Text>
                     )}
                   </View>
                   <Text style={styles.optionText}>{day}</Text>
@@ -145,20 +143,20 @@ export const AddGeneralInfoScreen = ({navigation, route}: Props) => {
       </ScrollView>
 
       {/* Footer */}
-      <View style={styles.footer}>
-        <TouchableOpacity
-          style={[
-            styles.saveButton,
-            isSubmitting && styles.saveButtonDisabled,
-          ]}
-          onPress={handleSave}
-          disabled={isSubmitting}
-          activeOpacity={0.8}>
-          <Text style={styles.saveButtonText}>
-            {isSubmitting ? 'Saving...' : 'Continue'}
-          </Text>
-        </TouchableOpacity>
-      </View>
+      <Box
+        padding="spacing.4"
+        borderTopWidth="thin"
+        borderColor="surface.border.gray.muted"
+        backgroundColor="surface.background.gray.intense">
+        <Button
+          variant="primary"
+          isFullWidth
+          isDisabled={isSubmitting}
+          isLoading={isSubmitting}
+          onClick={handleSave}>
+          Continue
+        </Button>
+      </Box>
     </SafeAreaView>
   );
 };
@@ -243,11 +241,21 @@ const styles = StyleSheet.create({
   selectPlaceholder: {
     color: colors.gray[400],
   },
-  chevron: {
-    transform: [{rotate: '0deg'}],
+  chevronIcon: {
+    fontSize: 14,
+    color: colors.gray[400],
   },
   chevronRotated: {
     transform: [{rotate: '180deg'}],
+  },
+  backIcon: {
+    fontSize: 22,
+    color: colors.gray[800],
+  },
+  checkIcon: {
+    fontSize: 12,
+    color: colors.white,
+    fontWeight: '700',
   },
   optionsList: {
     backgroundColor: colors.white,
@@ -301,7 +309,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.blue[600],
     paddingVertical: 16,
     borderRadius: 12,
-    alignItems: 'center',
   },
   saveButtonDisabled: {
     backgroundColor: colors.blue[400],
@@ -312,4 +319,3 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
-

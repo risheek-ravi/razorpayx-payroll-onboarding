@@ -9,7 +9,7 @@ import {
   Alert,
 } from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import Icon from 'react-native-vector-icons/Feather';
+// Icons replaced with emoji for better compatibility
 import {TimePicker} from '../components/TimePicker';
 import {colors} from '../theme/colors';
 import {RootStackParamList, SalaryConfig} from '../types';
@@ -71,7 +71,7 @@ export const SalaryScreen = ({navigation}: Props) => {
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => navigation.goBack()}>
-          <Icon name="arrow-left" size={24} color={colors.gray[800]} />
+          <Text style={styles.backIcon}>←</Text>
         </TouchableOpacity>
       </View>
 
@@ -138,7 +138,7 @@ export const SalaryScreen = ({navigation}: Props) => {
             {isSubmitting ? 'Saving...' : 'Continue'}
           </Text>
           {!isSubmitting && (
-            <Icon name="arrow-right" size={20} color={colors.white} />
+            <Text style={styles.arrowIcon}>→</Text>
           )}
         </TouchableOpacity>
       </View>
@@ -195,6 +195,14 @@ const styles = StyleSheet.create({
   backButton: {
     padding: 8,
     marginLeft: -8,
+  },
+  backIcon: {
+    fontSize: 22,
+    color: colors.gray[800],
+  },
+  arrowIcon: {
+    fontSize: 18,
+    color: colors.white,
   },
   scrollView: {
     flex: 1,

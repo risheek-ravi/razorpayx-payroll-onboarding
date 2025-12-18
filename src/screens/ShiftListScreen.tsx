@@ -15,7 +15,7 @@ import {
   ClockIcon,
 } from '@razorpay/blade/components';
 import {ShiftTypeModal} from '../components/ShiftTypeModal';
-import {getShifts} from '../services/dbService';
+import {getShifts, getLatestBusinessDetails} from '../services/dbService';
 import {
   RootStackParamList,
   ShiftWithStaffCount,
@@ -33,7 +33,8 @@ export const ShiftListScreen = ({navigation}: Props) => {
   const loadShifts = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await getShifts();
+      const bizData = await getLatestBusinessDetails();
+      const data = await getShifts(bizData?.id);
       setShifts(data);
     } catch (e) {
       console.error('Failed to load shifts:', e);

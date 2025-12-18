@@ -8,7 +8,7 @@ import {
   Animated,
   Dimensions,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/Feather';
+// Icons replaced with emoji for better compatibility
 import {colors} from '../theme/colors';
 
 interface WelcomeFlashProps {
@@ -78,7 +78,7 @@ export const WelcomeFlash = ({name, show, onClose}: WelcomeFlashProps) => {
             },
           ]}>
           <View style={styles.iconContainer}>
-            <Icon name="check-circle" size={32} color={colors.green[600]} />
+            <Text style={styles.successEmoji}>✅</Text>
           </View>
           <Text style={styles.title}>Success!</Text>
           <Text style={styles.message}>
@@ -126,6 +126,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 16,
+  },
+  successEmoji: {
+    fontSize: 28,
   },
   title: {
     fontSize: 20,

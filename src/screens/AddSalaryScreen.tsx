@@ -56,10 +56,12 @@ export const AddSalaryScreen = ({navigation, route}: Props) => {
 
   const handleContinue = () => {
     setShowPreviewModal(false);
+    // Map 'Per Hour Basis' to 'Hourly' for navigation
+    const mappedWageType = wageType === 'Per Hour Basis' ? 'Hourly' : wageType;
     navigation.navigate('AddGeneralInfo', {
       staffData: {
         ...staffData,
-        wageType,
+        wageType: mappedWageType,
         salaryAmount,
       },
     });
@@ -87,6 +89,19 @@ export const AddSalaryScreen = ({navigation, route}: Props) => {
 
   const getWageTypeDisplayName = (type: WageType) => {
     return type === 'Per Hour Basis' ? 'Hourly' : type;
+  };
+
+  const getSalaryLabel = (type: WageType) => {
+    switch (type) {
+      case 'Monthly':
+        return 'Monthly salary';
+      case 'Daily':
+        return 'Daily salary';
+      case 'Per Hour Basis':
+        return 'Hourly rate';
+      default:
+        return 'Salary';
+    }
   };
 
   return (
@@ -167,7 +182,7 @@ export const AddSalaryScreen = ({navigation, route}: Props) => {
                 backgroundColor="surface.background.gray.moderate"
                 borderRadius="medium">
                 <TextInput
-                  label="Monthly salary"
+                  label={getSalaryLabel(wageType)}
                   prefix="₹"
                   value={salaryAmount}
                   onChange={({value}) => setSalaryAmount(value ?? '0')}
@@ -261,6 +276,7 @@ export const AddSalaryScreen = ({navigation, route}: Props) => {
         onContinue={handleContinue}
         amount={safeSalary}
         systemBasic={currentSystemBasic}
+        wageType={wageType}
       />
     </SafeAreaView>
   );
@@ -272,6 +288,7 @@ interface PreviewBottomSheetProps {
   onContinue: () => void;
   amount: number;
   systemBasic: number;
+  wageType: WageType;
 }
 
 const PreviewBottomSheet = ({
@@ -280,9 +297,23 @@ const PreviewBottomSheet = ({
   onContinue,
   amount,
   systemBasic,
+  wageType,
 }: PreviewBottomSheetProps) => {
   const safeAmount = Number.isFinite(amount) ? amount : 0;
   const safeSystemBasic = Number.isFinite(systemBasic) ? systemBasic : 0;
+
+  const getPeriodLabel = (type: WageType) => {
+    switch (type) {
+      case 'Monthly':
+        return 'MONTHLY';
+      case 'Daily':
+        return 'DAILY';
+      case 'Per Hour Basis':
+        return 'HOURLY';
+      default:
+        return 'MONTHLY';
+    }
+  };
 
   return (
     <BottomSheet isOpen={isOpen} onDismiss={onClose}>
@@ -304,7 +335,7 @@ const PreviewBottomSheet = ({
             size="small"
             weight="semibold"
             color="interactive.text.primary.normal">
-            MONTHLY
+            {getPeriodLabel(wageType)}
           </Text>
         </Box>
 

@@ -40,6 +40,7 @@ Deploy your SQLite backend to Railway in 5 minutes!
 ### Step 4: Deploy! (2 minutes)
 
 Railway automatically:
+
 - ✅ Installs dependencies
 - ✅ Builds your app
 - ✅ Starts the server
@@ -59,6 +60,7 @@ curl https://your-app.railway.app/health
 ```
 
 Expected response:
+
 ```json
 {
   "status": "ok",
@@ -94,6 +96,7 @@ railway init
 ```
 
 Follow prompts:
+
 - Create new project? **Yes**
 - Project name: **razorpayx-payroll-backend**
 
@@ -122,6 +125,7 @@ railway open
 ## 🎯 Your API is Live!
 
 Your backend is now accessible at:
+
 - **Base URL**: `https://your-app.railway.app`
 - **Health**: `https://your-app.railway.app/health`
 - **API**: `https://your-app.railway.app/api/v1`
@@ -130,7 +134,7 @@ Your backend is now accessible at:
 
 ```typescript
 // src/config/api.ts
-import { Platform } from 'react-native';
+import {Platform} from 'react-native';
 
 const API_BASE_URL = __DEV__
   ? Platform.select({
@@ -139,7 +143,7 @@ const API_BASE_URL = __DEV__
     })
   : 'https://your-app.railway.app/api/v1';
 
-export { API_BASE_URL };
+export {API_BASE_URL};
 ```
 
 ## 🔄 Automatic Deployments
@@ -159,11 +163,13 @@ Railway detects the push and deploys automatically! 🎉
 ### View Logs
 
 **Dashboard:**
+
 1. Go to Railway dashboard
 2. Click your service
 3. Click "Deployments" → View logs
 
 **CLI:**
+
 ```bash
 railway logs
 ```
@@ -177,11 +183,13 @@ railway logs
 ## 💰 Pricing & Usage
 
 ### Free Tier
+
 - **$5 credit/month**
 - Enough for ~500 hours of runtime
 - Perfect for development and small apps
 
 ### Usage Tips
+
 ```bash
 # Check usage
 railway status
@@ -196,11 +204,13 @@ railway open
 If you need environment variables:
 
 **Dashboard:**
+
 1. Click your service
 2. Go to "Variables"
 3. Add variables
 
 **CLI:**
+
 ```bash
 railway variables set KEY=value
 ```
@@ -208,6 +218,7 @@ railway variables set KEY=value
 ## 🗄️ Database Persistence
 
 Railway automatically provides persistent storage:
+
 - ✅ Your SQLite database persists across deployments
 - ✅ Located at: `backend/prisma/dev.db`
 - ✅ Survives restarts and redeployments
@@ -217,11 +228,13 @@ Railway automatically provides persistent storage:
 ### Build Failed
 
 **Check logs:**
+
 ```bash
 railway logs
 ```
 
 **Common fixes:**
+
 - Ensure `package.json` has correct scripts
 - Verify `railway.json` is in backend folder
 - Check Node.js version compatibility
@@ -229,6 +242,7 @@ railway logs
 ### App Not Starting
 
 **Check start command:**
+
 1. Go to Settings → Deploy
 2. Verify start command: `npm run start`
 3. Ensure build command ran successfully
@@ -236,6 +250,7 @@ railway logs
 ### Database Not Persisting
 
 **Verify file location:**
+
 - SQLite file should be in project directory
 - Railway persists the entire project folder
 - Check `prisma/schema.prisma` path is correct
@@ -244,6 +259,7 @@ railway logs
 
 Railway automatically sets `PORT` environment variable.
 Your app should use:
+
 ```typescript
 const PORT = Number(process.env.PORT) || 3001;
 ```
@@ -346,4 +362,3 @@ Your SQLite backend is now live on Railway!
 ---
 
 **Deployed successfully?** Update your frontend and start testing! 🚀
-

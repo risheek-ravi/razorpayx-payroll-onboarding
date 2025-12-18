@@ -8,7 +8,6 @@ import {
 } from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {useFocusEffect} from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/Feather';
 import {
   Box,
   Text,
@@ -17,7 +16,21 @@ import {
   Card,
   CardBody,
   Spinner,
+  HomeIcon,
+  UsersIcon,
+  CalendarIcon,
+  RupeeIcon,
+  SettingsIcon,
+  ChevronDownIcon,
+  ChevronRightIcon,
+  MessageCircleIcon,
+  SmartphoneIcon,
+  ClockIcon,
+  FileTextIcon,
+  PlayCircleIcon,
+  BellIcon,
 } from '@razorpay/blade/components';
+import type {IconComponent} from '@razorpay/blade/components';
 import {StaffTypeModal} from '../components/StaffTypeModal';
 import {AttendanceTab} from '../components/AttendanceTab';
 import {colors} from '../theme/colors';
@@ -44,8 +57,8 @@ export const DashboardScreen = ({navigation, route}: Props) => {
     setLoading(true);
     try {
       const [empData, shiftData] = await Promise.all([
-        getEmployees(),
-        getShifts(),
+        getEmployees(businessId),
+        getShifts(businessId),
       ]);
       setEmployees(empData);
       setShifts(shiftData);
@@ -54,7 +67,7 @@ export const DashboardScreen = ({navigation, route}: Props) => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [businessId]);
 
   // Reload data when screen comes into focus
   useFocusEffect(
@@ -101,13 +114,16 @@ export const DashboardScreen = ({navigation, route}: Props) => {
           <Text size="large" weight="semibold" truncateAfterLines={1}>
             {businessName}
           </Text>
-          <Icon name="chevron-down" size={20} color={colors.gray[500]} />
+          <ChevronDownIcon size="medium" color="surface.icon.gray.muted" />
         </View>
         <TouchableOpacity style={styles.helpButton}>
           <Text size="small" color="interactive.text.primary.normal">
             Help
           </Text>
-          <Icon name="message-circle" size={20} color={colors.blue[600]} />
+          <MessageCircleIcon
+            size="medium"
+            color="interactive.icon.primary.normal"
+          />
         </TouchableOpacity>
       </View>
 
@@ -131,27 +147,27 @@ export const DashboardScreen = ({navigation, route}: Props) => {
                 </Text>
                 <Box marginBottom="spacing.6">
                   <FeatureRow
-                    icon="calendar"
+                    icon={CalendarIcon}
                     text="Mark daily attendance of your staff"
                     onPress={() => setActiveTab('attendance')}
                   />
                   <Box marginTop="spacing.4">
                     <FeatureRow
-                      icon="clock"
+                      icon={ClockIcon}
                       text="Auto salary calculation based on attendance"
                       onPress={() => {}}
                     />
                   </Box>
                   <Box marginTop="spacing.4">
                     <FeatureRow
-                      icon="file-text"
+                      icon={FileTextIcon}
                       text="Send salary slips via whatsapp & sms"
                       onPress={() => {}}
                     />
                   </Box>
                   <Box marginTop="spacing.4">
                     <FeatureRow
-                      icon="play-circle"
+                      icon={PlayCircleIcon}
                       text="Finalize & Execute Payroll"
                       onPress={handlePayrollClick}
                       isNew
@@ -180,7 +196,10 @@ export const DashboardScreen = ({navigation, route}: Props) => {
                   </Heading>
                 </View>
                 <View style={styles.phoneGraphic}>
-                  <Icon name="smartphone" size={32} color={colors.white} />
+                  <SmartphoneIcon
+                    size="large"
+                    color="surface.icon.staticWhite.normal"
+                  />
                 </View>
               </View>
 
@@ -224,7 +243,7 @@ export const DashboardScreen = ({navigation, route}: Props) => {
                 justifyContent="center"
                 paddingY="spacing.10">
                 <View style={styles.emptyIcon}>
-                  <Icon name="users" size={32} color={colors.gray[400]} />
+                  <UsersIcon size="large" color="surface.icon.gray.muted" />
                 </View>
                 <Text
                   color="surface.text.gray.muted"
@@ -272,20 +291,20 @@ export const DashboardScreen = ({navigation, route}: Props) => {
                 SETTINGS
               </Text>
               <FeatureRow
-                icon="clock"
+                icon={ClockIcon}
                 text="Manage shift timings for your staff"
                 onPress={() => navigation.navigate('ShiftList')}
               />
               <Box marginTop="spacing.4">
                 <FeatureRow
-                  icon="users"
+                  icon={UsersIcon}
                   text="Manage staff roles and permissions"
                   onPress={() => {}}
                 />
               </Box>
               <Box marginTop="spacing.4">
                 <FeatureRow
-                  icon="bell"
+                  icon={BellIcon}
                   text="Configure notification preferences"
                   onPress={() => {}}
                 />
@@ -298,31 +317,31 @@ export const DashboardScreen = ({navigation, route}: Props) => {
       {/* Bottom Navigation */}
       <View style={styles.bottomNav}>
         <NavItem
-          icon="home"
+          icon={HomeIcon}
           label="Home"
           active={activeTab === 'home'}
           onPress={() => setActiveTab('home')}
         />
         <NavItem
-          icon="users"
+          icon={UsersIcon}
           label="Staff"
           active={activeTab === 'staff'}
           onPress={() => setActiveTab('staff')}
         />
         <NavItem
-          icon="calendar"
+          icon={CalendarIcon}
           label="Attendance"
           active={activeTab === 'attendance'}
           onPress={() => setActiveTab('attendance')}
         />
         <NavItem
-          icon="dollar-sign"
+          icon={RupeeIcon}
           label="Payroll"
           active={activeTab === 'payroll'}
           onPress={handlePayrollClick}
         />
         <NavItem
-          icon="settings"
+          icon={SettingsIcon}
           label="Settings"
           active={activeTab === 'settings'}
           onPress={() => setActiveTab('settings')}
@@ -402,7 +421,7 @@ const StaffCard = ({employee, onPress}: StaffCardProps) => (
               Present
             </Text>
           </View>
-          <Icon name="chevron-right" size={20} color={colors.gray[300]} />
+          <ChevronRightIcon size="medium" color="surface.icon.gray.disabled" />
         </View>
       </CardBody>
     </Card>
@@ -410,19 +429,24 @@ const StaffCard = ({employee, onPress}: StaffCardProps) => (
 );
 
 interface FeatureRowProps {
-  icon: string;
+  icon: IconComponent;
   text: string;
   onPress: () => void;
   isNew?: boolean;
 }
 
-const FeatureRow = ({icon, text, onPress, isNew}: FeatureRowProps) => (
+const FeatureRow = ({
+  icon: IconComp,
+  text,
+  onPress,
+  isNew,
+}: FeatureRowProps) => (
   <TouchableOpacity
     style={styles.featureRow}
     onPress={onPress}
     activeOpacity={0.7}>
     <View style={styles.featureIconContainer}>
-      <Icon name={icon} size={24} color={colors.teal[600]} />
+      <IconComp size="medium" color="feedback.icon.positive.intense" />
     </View>
     <View style={styles.featureTextContainer}>
       <View style={styles.featureTextRow}>
@@ -439,26 +463,27 @@ const FeatureRow = ({icon, text, onPress, isNew}: FeatureRowProps) => (
         )}
       </View>
     </View>
-    <Icon name="chevron-right" size={20} color={colors.gray[300]} />
+    <ChevronRightIcon size="medium" color="surface.icon.gray.disabled" />
   </TouchableOpacity>
 );
 
 interface NavItemProps {
-  icon: string;
+  icon: IconComponent;
   label: string;
   active?: boolean;
   onPress: () => void;
 }
 
-const NavItem = ({icon, label, active, onPress}: NavItemProps) => (
+const NavItem = ({icon: IconComp, label, active, onPress}: NavItemProps) => (
   <TouchableOpacity
     style={styles.navItem}
     onPress={onPress}
     activeOpacity={0.7}>
-    <Icon
-      name={icon}
-      size={24}
-      color={active ? colors.blue[600] : colors.gray[500]}
+    <IconComp
+      size="medium"
+      color={
+        active ? 'interactive.icon.primary.normal' : 'surface.icon.gray.muted'
+      }
     />
     <Text
       size="xsmall"

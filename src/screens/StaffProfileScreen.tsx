@@ -206,15 +206,17 @@ const BasicDetailsTab: React.FC<BasicDetailsTabProps> = ({
         />
 
         {/* Salary Cycle Picker Trigger */}
-        <TouchableOpacity
-          onPress={() => setShowCyclePicker(true)}
-          style={styles.pickerField}>
-          <Text style={styles.pickerLabel}>Salary Cycle</Text>
-          <Text style={styles.pickerValue}>
-            {getCycleText(formData.salaryCycleDate)}
-          </Text>
-          <Text style={styles.pickerIcon}>📅</Text>
-        </TouchableOpacity>
+        {formData.wageType == 'Monthly' ? (
+          <TouchableOpacity
+            onPress={() => setShowCyclePicker(true)}
+            style={styles.pickerField}>
+            <Text style={styles.pickerLabel}>Salary Cycle</Text>
+            <Text style={styles.pickerValue}>
+              {getCycleText(formData.salaryCycleDate)}
+            </Text>
+            <Text style={styles.pickerIcon}>📅</Text>
+          </TouchableOpacity>
+        ) : null}
 
         <TouchableOpacity onPress={handleSubmit} style={styles.saveButton}>
           <Text style={styles.saveButtonText}>Save Changes</Text>

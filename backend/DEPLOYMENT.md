@@ -13,17 +13,20 @@ This guide will help you deploy the RazorpayX Payroll backend to Vercel.
 Since Vercel uses serverless functions, SQLite won't work in production. Choose one of these options:
 
 ### Option A: Vercel Postgres (Recommended)
+
 1. Go to your Vercel dashboard
 2. Navigate to Storage → Create Database → Postgres
 3. Copy the `DATABASE_URL` connection string
 
 ### Option B: Supabase (Free tier available)
+
 1. Create account at [supabase.com](https://supabase.com)
 2. Create a new project
 3. Go to Settings → Database → Connection String
 4. Copy the connection string (use the "Connection pooling" URL for better performance)
 
 ### Option C: Neon (Free tier available)
+
 1. Create account at [neon.tech](https://neon.tech)
 2. Create a new project
 3. Copy the connection string
@@ -90,11 +93,13 @@ vercel --prod
 After deployment, you'll get a URL like: `https://your-project.vercel.app`
 
 Test the health endpoint:
+
 ```bash
 curl https://your-project.vercel.app/health
 ```
 
 Expected response:
+
 ```json
 {
   "status": "ok",
@@ -108,39 +113,46 @@ Update your React Native app to use the production URL:
 
 ```typescript
 // In your frontend code
-const API_URL = __DEV__ 
-  ? 'http://10.0.2.2:3001/api/v1'  // Local development
-  : 'https://your-project.vercel.app/api/v1';  // Production
+const API_URL = __DEV__
+  ? 'http://10.0.2.2:3001/api/v1' // Local development
+  : 'https://your-project.vercel.app/api/v1'; // Production
 ```
 
 ## Environment Variables
 
 Make sure these are set in Vercel:
 
-| Variable | Description | Example |
-|----------|-------------|---------|
+| Variable       | Description                  | Example                               |
+| -------------- | ---------------------------- | ------------------------------------- |
 | `DATABASE_URL` | PostgreSQL connection string | `postgresql://user:pass@host:5432/db` |
-| `NODE_ENV` | Environment | `production` (auto-set by Vercel) |
+| `NODE_ENV`     | Environment                  | `production` (auto-set by Vercel)     |
 
 ## Troubleshooting
 
 ### Issue: Prisma Client not generated
+
 **Solution**: Vercel automatically runs `vercel-build` script which includes `prisma generate`
 
 ### Issue: Database connection errors
-**Solution**: 
+
+**Solution**:
+
 - Verify `DATABASE_URL` is correctly set in Vercel environment variables
 - Ensure your database allows connections from Vercel's IP ranges
 - For Supabase/Neon, use the connection pooling URL
 
 ### Issue: Cold starts are slow
-**Solution**: 
+
+**Solution**:
+
 - This is normal for serverless functions
 - Consider upgrading to Vercel Pro for better performance
 - Use connection pooling (Prisma Data Proxy or PgBouncer)
 
 ### Issue: API routes not working
-**Solution**: 
+
+**Solution**:
+
 - Check Vercel deployment logs
 - Ensure `vercel.json` is in the backend directory
 - Verify all routes start with `/api/v1`
@@ -207,4 +219,3 @@ vercel env pull
 - [Vercel Documentation](https://vercel.com/docs)
 - [Prisma Documentation](https://www.prisma.io/docs)
 - [Vercel Community](https://github.com/vercel/vercel/discussions)
-

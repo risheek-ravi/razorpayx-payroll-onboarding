@@ -163,10 +163,11 @@ router.post('/', async (req, res, next) => {
     }
 
     // Validate payment mode
-    if (!['Cash', 'UPI', 'Bank Transfer'].includes(paymentMode)) {
+    if (!['Cash', 'UPI', 'Phone', 'Bank Transfer'].includes(paymentMode)) {
       return res.status(400).json({
         success: false,
-        error: 'Invalid payment mode. Must be one of: Cash, UPI, Bank Transfer',
+        error:
+          'Invalid payment mode. Must be one of: Cash, UPI, Phone, Bank Transfer',
       });
     }
 

@@ -13,53 +13,59 @@
 ## 📊 API Endpoints (All Working)
 
 ### Base URL
+
 ```
 https://laudable-sparkle-production-8104.up.railway.app/api/v1
 ```
 
 ### Available Endpoints
 
-| Endpoint | Method | Description | Status |
-|----------|--------|-------------|--------|
-| `/health` | GET | Health check | ✅ |
-| `/health/db` | GET | Database health check | ✅ |
-| `/api/v1/businesses` | POST | Create business | ✅ |
-| `/api/v1/businesses/latest/one` | GET | Get latest business | ✅ |
-| `/api/v1/employees` | GET | List employees | ✅ |
-| `/api/v1/employees` | POST | Create employee | ✅ |
-| `/api/v1/shifts` | GET | List shifts | ✅ |
-| `/api/v1/shifts` | POST | Create shift | ✅ |
+| Endpoint                        | Method | Description           | Status |
+| ------------------------------- | ------ | --------------------- | ------ |
+| `/health`                       | GET    | Health check          | ✅     |
+| `/health/db`                    | GET    | Database health check | ✅     |
+| `/api/v1/businesses`            | POST   | Create business       | ✅     |
+| `/api/v1/businesses/latest/one` | GET    | Get latest business   | ✅     |
+| `/api/v1/employees`             | GET    | List employees        | ✅     |
+| `/api/v1/employees`             | POST   | Create employee       | ✅     |
+| `/api/v1/shifts`                | GET    | List shifts           | ✅     |
+| `/api/v1/shifts`                | POST   | Create shift          | ✅     |
 
 ---
 
 ## 🧪 Testing
 
 ### Quick Health Check
+
 ```bash
 curl https://laudable-sparkle-production-8104.up.railway.app/health
 ```
 
 **Expected Response**:
+
 ```json
-{"status":"ok","timestamp":"2025-12-17T..."}
+{"status": "ok", "timestamp": "2025-12-17T..."}
 ```
 
 ### Database Health Check
+
 ```bash
 curl https://laudable-sparkle-production-8104.up.railway.app/health/db
 ```
 
 **Expected Response**:
+
 ```json
 {
-  "status":"ok",
-  "database":"connected",
-  "tables":{"businesses":0},
-  "timestamp":"2025-12-17T..."
+  "status": "ok",
+  "database": "connected",
+  "tables": {"businesses": 0},
+  "timestamp": "2025-12-17T..."
 }
 ```
 
 ### Full API Test Suite
+
 ```bash
 bash test-api.sh
 ```
@@ -73,14 +79,17 @@ bash test-api.sh
 ### What Was Fixed
 
 1. **Server Not Starting in Production**
+
    - Issue: `NODE_ENV !== 'production'` check prevented server from starting
    - Fix: Removed environment check, server now starts in all environments
 
 2. **OpenSSL Compatibility**
+
    - Issue: Prisma query engine incompatible with Alpine Linux OpenSSL
    - Fix: Added `debian-openssl-3.0.x` binary target in Prisma schema
 
 3. **Database Tables Not Created**
+
    - Issue: `prisma db push` not running in start script
    - Fix: Added `npx prisma db push --accept-data-loss` to `package.json` start script
 
@@ -113,6 +122,7 @@ const PRODUCTION_API_URL =
 ### How It Works
 
 - **Development Mode** (`__DEV__ = true`): Uses local backend
+
   - iOS Simulator: `http://localhost:3001/api/v1`
   - Android Emulator: `http://10.0.2.2:3001/api/v1`
 
@@ -124,7 +134,7 @@ const PRODUCTION_API_URL =
 In your React Native app:
 
 ```typescript
-import { testApiConnection } from './src/config/api';
+import {testApiConnection} from './src/config/api';
 
 // Test backend connectivity
 await testApiConnection();
@@ -145,6 +155,7 @@ git push origin main
 ```
 
 Railway will:
+
 1. Detect changes (~30 seconds)
 2. Build with Nixpacks (~2-3 minutes)
 3. Run `prisma db push` and start server (~30 seconds)
@@ -153,6 +164,7 @@ Railway will:
 ### Manual Redeploy
 
 In Railway dashboard:
+
 1. Go to your project
 2. Click "Deployments"
 3. Click "Redeploy" on any deployment
@@ -185,6 +197,7 @@ npm run android --variant=release
 ### 2. Monitor Railway Logs
 
 Check Railway dashboard for:
+
 - Request logs
 - Error messages
 - Performance metrics
@@ -192,6 +205,7 @@ Check Railway dashboard for:
 ### 3. Add More Features
 
 Your backend is ready for:
+
 - Additional API endpoints
 - Authentication
 - File uploads
@@ -215,11 +229,11 @@ Your backend is ready for:
 
 ### Common Issues
 
-| Issue | Solution |
-|-------|----------|
-| 502 Bad Gateway | Server not starting - check logs |
+| Issue               | Solution                                         |
+| ------------------- | ------------------------------------------------ |
+| 502 Bad Gateway     | Server not starting - check logs                 |
 | Table doesn't exist | Volume not configured or `prisma db push` failed |
-| OpenSSL errors | Check `binaryTargets` in `schema.prisma` |
+| OpenSSL errors      | Check `binaryTargets` in `schema.prisma`         |
 
 ---
 
@@ -234,6 +248,7 @@ Your backend is ready for:
 ## 🎉 Congratulations!
 
 Your RazorpayX Payroll Onboarding backend is now:
+
 - ✅ Deployed to production
 - ✅ Using persistent SQLite database
 - ✅ All API endpoints working
@@ -241,4 +256,3 @@ Your RazorpayX Payroll Onboarding backend is now:
 - ✅ Automatically deploying on git push
 
 **Happy coding!** 🚀
-

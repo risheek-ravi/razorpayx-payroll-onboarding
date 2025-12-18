@@ -8,10 +8,9 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
-  TextInput,
 } from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import Icon from 'react-native-vector-icons/Feather';
+// Icons replaced with emoji for better compatibility
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {InputField} from '../components/InputField';
 import {CycleDateModal} from '../components/CycleDateModal';
@@ -99,7 +98,7 @@ export const AddStaffScreen = ({navigation, route}: Props) => {
           <TouchableOpacity
             style={styles.backButton}
             onPress={() => navigation.goBack()}>
-            <Icon name="arrow-left" size={24} color={colors.gray[800]} />
+            <Text style={styles.backIcon}>←</Text>
           </TouchableOpacity>
           <Text style={styles.headerTitle}>{title}</Text>
         </View>
@@ -148,12 +147,7 @@ export const AddStaffScreen = ({navigation, route}: Props) => {
               ]}>
               {formData.dob ? formatDate(formData.dob) : 'Select Date'}
             </Text>
-            <Icon
-              name="calendar"
-              size={20}
-              color={colors.gray[400]}
-              style={styles.selectIcon}
-            />
+            <Text style={[styles.selectIconEmoji, styles.selectIcon]}>📅</Text>
           </TouchableOpacity>
 
           {showDatePicker && (
@@ -179,12 +173,7 @@ export const AddStaffScreen = ({navigation, route}: Props) => {
             onPress={() => setShowGenderPicker(!showGenderPicker)}>
             <Text style={styles.selectLabel}>Gender</Text>
             <Text style={styles.selectValue}>{formData.gender}</Text>
-            <Icon
-              name="chevron-down"
-              size={20}
-              color={colors.gray[500]}
-              style={styles.selectIcon}
-            />
+            <Text style={[styles.chevronIcon, styles.selectIcon]}>▼</Text>
           </TouchableOpacity>
 
           {showGenderPicker && (
@@ -205,25 +194,27 @@ export const AddStaffScreen = ({navigation, route}: Props) => {
                     {option}
                   </Text>
                   {formData.gender === option && (
-                    <Icon name="check" size={18} color={colors.blue[600]} />
+                    <Text style={styles.checkIcon}>✓</Text>
                   )}
                 </TouchableOpacity>
               ))}
             </View>
           )}
 
-          {/* Salary Cycle */}
-          <TouchableOpacity
-            style={styles.cycleDateField}
-            onPress={() => setShowCyclePicker(true)}>
-            <View>
-              <Text style={styles.selectLabel}>Salary Cycle</Text>
-              <Text style={styles.cycleDateValue}>
-                {getCycleText(formData.salaryCycleDate)}
-              </Text>
-            </View>
-            <Icon name="calendar" size={20} color={colors.gray[400]} />
-          </TouchableOpacity>
+          {/* Salary Cycle - Only show for Monthly wage type */}
+          {formData.wageType === 'Monthly' && (
+            <TouchableOpacity
+              style={styles.cycleDateField}
+              onPress={() => setShowCyclePicker(true)}>
+              <View>
+                <Text style={styles.selectLabel}>Salary Cycle</Text>
+                <Text style={styles.cycleDateValue}>
+                  {getCycleText(formData.salaryCycleDate)}
+                </Text>
+              </View>
+              <Text style={styles.selectIconEmoji}>📅</Text>
+            </TouchableOpacity>
+          )}
 
           {/* Salary Access */}
           <TouchableOpacity
@@ -231,12 +222,7 @@ export const AddStaffScreen = ({navigation, route}: Props) => {
             onPress={() => setShowAccessPicker(!showAccessPicker)}>
             <Text style={styles.selectLabel}>Salary Access</Text>
             <Text style={styles.selectValue}>{formData.salaryAccess}</Text>
-            <Icon
-              name="chevron-down"
-              size={20}
-              color={colors.gray[500]}
-              style={styles.selectIcon}
-            />
+            <Text style={[styles.chevronIcon, styles.selectIcon]}>▼</Text>
           </TouchableOpacity>
 
           {showAccessPicker && (
@@ -258,7 +244,7 @@ export const AddStaffScreen = ({navigation, route}: Props) => {
                     {option}
                   </Text>
                   {formData.salaryAccess === option && (
-                    <Icon name="check" size={18} color={colors.blue[600]} />
+                    <Text style={styles.checkIcon}>✓</Text>
                   )}
                 </TouchableOpacity>
               ))}
@@ -456,5 +442,21 @@ const styles = StyleSheet.create({
     color: colors.white,
     fontSize: 18,
     fontWeight: '600',
+  },
+  backIcon: {
+    fontSize: 22,
+    color: colors.gray[800],
+  },
+  selectIconEmoji: {
+    fontSize: 18,
+  },
+  chevronIcon: {
+    fontSize: 14,
+    color: colors.gray[500],
+  },
+  checkIcon: {
+    fontSize: 16,
+    color: colors.blue[600],
+    fontWeight: '700',
   },
 });

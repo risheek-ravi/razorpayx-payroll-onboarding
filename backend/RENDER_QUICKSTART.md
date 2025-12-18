@@ -36,23 +36,26 @@ Deploy your SQLite backend to Render in 5 minutes!
 Fill in the configuration:
 
 **Basic Settings:**
+
 - **Name**: `razorpayx-payroll-backend`
 - **Region**: Choose closest to your users
 - **Branch**: `main` (or your default branch)
 - **Root Directory**: `backend`
 
 **Build & Deploy:**
+
 - **Runtime**: `Node`
-- **Build Command**: 
+- **Build Command**:
   ```bash
   npm install && npm run db:generate && npm run build
   ```
-- **Start Command**: 
+- **Start Command**:
   ```bash
   npm run start
   ```
 
 **Instance Type:**
+
 - Select **Free** (or Starter if you need always-on)
 
 ### Step 4: Add Persistent Disk (1 minute) ⚠️ IMPORTANT
@@ -75,6 +78,7 @@ This is crucial for SQLite!
 ### Step 6: Get Your URL (30 seconds)
 
 After deployment completes:
+
 1. Your URL is shown at the top: `https://your-app.onrender.com`
 2. Copy this URL
 
@@ -85,6 +89,7 @@ curl https://your-app.onrender.com/health
 ```
 
 Expected response:
+
 ```json
 {
   "status": "ok",
@@ -95,6 +100,7 @@ Expected response:
 ## 🎯 Your API is Live!
 
 Your backend is now accessible at:
+
 - **Base URL**: `https://your-app.onrender.com`
 - **Health**: `https://your-app.onrender.com/health`
 - **API**: `https://your-app.onrender.com/api/v1`
@@ -103,7 +109,7 @@ Your backend is now accessible at:
 
 ```typescript
 // src/config/api.ts
-import { Platform } from 'react-native';
+import {Platform} from 'react-native';
 
 const API_BASE_URL = __DEV__
   ? Platform.select({
@@ -112,7 +118,7 @@ const API_BASE_URL = __DEV__
     })
   : 'https://your-app.onrender.com/api/v1';
 
-export { API_BASE_URL };
+export {API_BASE_URL};
 ```
 
 ## 🔄 Automatic Deployments
@@ -130,17 +136,21 @@ Render detects the push and deploys automatically! 🎉
 ## ⚠️ Free Tier Important Notes
 
 ### App Sleep Behavior
+
 - **Free tier apps sleep after 15 minutes of inactivity**
 - First request after sleep takes 30-60 seconds to wake up
 - Subsequent requests are fast
 
 ### Keep App Awake (Optional)
+
 Use a service like [UptimeRobot](https://uptimerobot.com) to ping your app every 5 minutes:
+
 - Add monitor: `https://your-app.onrender.com/health`
 - Interval: 5 minutes
 - This keeps your app awake
 
 ### Upgrade to Starter ($7/month)
+
 - Always-on (no sleep)
 - Faster response times
 - Better for production
@@ -184,6 +194,7 @@ If you need environment variables:
 ### Verify Disk is Mounted
 
 Check logs for:
+
 ```
 Disk mounted at /opt/render/project/src/backend/prisma
 ```
@@ -208,11 +219,13 @@ Disk mounted at /opt/render/project/src/backend/prisma
 ### Build Failed
 
 **Check build logs:**
+
 1. Go to "Events" tab
 2. Click failed deployment
 3. Review build logs
 
 **Common fixes:**
+
 - Verify `package.json` scripts are correct
 - Check Node.js version compatibility
 - Ensure all dependencies are listed
@@ -220,6 +233,7 @@ Disk mounted at /opt/render/project/src/backend/prisma
 ### App Not Starting
 
 **Check start command:**
+
 1. Go to "Settings"
 2. Verify Start Command: `npm run start`
 3. Check if build completed successfully
@@ -227,11 +241,13 @@ Disk mounted at /opt/render/project/src/backend/prisma
 ### Database Not Found
 
 **Verify disk mount path:**
+
 1. Go to "Disks" in settings
 2. Check mount path matches your schema
 3. Should be: `/opt/render/project/src/backend/prisma`
 
 **Update schema if needed:**
+
 ```prisma
 datasource db {
   provider = "sqlite"
@@ -243,6 +259,7 @@ datasource db {
 
 Render sets `PORT` environment variable automatically.
 Your app should use:
+
 ```typescript
 const PORT = Number(process.env.PORT) || 3001;
 ```
@@ -250,10 +267,12 @@ const PORT = Number(process.env.PORT) || 3001;
 ### First Request is Slow (Free Tier)
 
 This is expected! Free tier apps sleep after 15 minutes.
+
 - First request: 30-60 seconds
 - Subsequent requests: Fast
 
 **Solutions:**
+
 - Upgrade to Starter plan ($7/month)
 - Use UptimeRobot to keep app awake
 - Accept the trade-off for free hosting
@@ -270,6 +289,7 @@ This is expected! Free tier apps sleep after 15 minutes.
 ### Deploy Hooks
 
 Create webhook for manual deployments:
+
 1. Go to "Settings"
 2. Scroll to "Deploy Hook"
 3. Copy webhook URL
@@ -281,6 +301,7 @@ Create webhook for manual deployments:
 ### Preview Environments
 
 Render creates preview environments for pull requests:
+
 1. Enable in "Settings" → "Pull Request Previews"
 2. Each PR gets a unique URL
 3. Great for testing before merging
@@ -288,6 +309,7 @@ Render creates preview environments for pull requests:
 ### Database Backups
 
 **Manual backup:**
+
 1. Go to "Shell" tab
 2. Run:
    ```bash
@@ -295,6 +317,7 @@ Render creates preview environments for pull requests:
    ```
 
 **Download backup:**
+
 1. Use Shell to create backup
 2. Use `scp` or Render's file browser (if available)
 
@@ -303,6 +326,7 @@ Render creates preview environments for pull requests:
 ### Health Checks
 
 Render automatically monitors your `/health` endpoint:
+
 1. Go to "Settings"
 2. Scroll to "Health Check Path"
 3. Set to: `/health`
@@ -310,6 +334,7 @@ Render automatically monitors your `/health` endpoint:
 ### Auto-Deploy
 
 Control when to deploy:
+
 1. Go to "Settings"
 2. Toggle "Auto-Deploy"
 3. If off, deploy manually from dashboard
@@ -317,6 +342,7 @@ Control when to deploy:
 ### Rollback
 
 Rollback to previous deployment:
+
 1. Go to "Events" tab
 2. Find successful deployment
 3. Click "Rollback to this version"
@@ -337,18 +363,21 @@ Rollback to previous deployment:
 ## 💰 Pricing
 
 ### Free Tier
+
 - ✅ 750 hours/month (enough for 1 app)
 - ✅ 1GB persistent disk
 - ⚠️ Apps sleep after 15 minutes
 - ⚠️ Slower cold starts
 
 ### Starter ($7/month)
+
 - ✅ Always-on (no sleep)
 - ✅ Faster performance
 - ✅ 1GB persistent disk included
 - ✅ Better for production
 
 ### Standard ($25/month)
+
 - ✅ More resources
 - ✅ 10GB persistent disk
 - ✅ Best for high-traffic apps
@@ -385,4 +414,3 @@ Your SQLite backend is now live on Render!
 ---
 
 **Deployed successfully?** Update your frontend and start testing! 🚀
-

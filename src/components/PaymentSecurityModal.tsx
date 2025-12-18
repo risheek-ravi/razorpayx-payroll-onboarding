@@ -47,7 +47,9 @@ export const PaymentSecurityModal: React.FC<PaymentSecurityModalProps> = ({
   }, [step]);
 
   const handleOtpChange = (index: number, value: string) => {
-    if (isNaN(Number(value))) return;
+    if (isNaN(Number(value))) {
+      return;
+    }
     const newOtp = [...otp];
     newOtp[index] = value;
     setOtp(newOtp);
@@ -81,7 +83,9 @@ export const PaymentSecurityModal: React.FC<PaymentSecurityModalProps> = ({
     }, 5000);
   };
 
-  if (!isOpen) return null;
+  if (!isOpen) {
+    return null;
+  }
 
   return (
     <Modal visible={isOpen} animationType="fade" transparent>
@@ -253,4 +257,3 @@ const styles = StyleSheet.create({
     color: '#111827',
   },
 });
-

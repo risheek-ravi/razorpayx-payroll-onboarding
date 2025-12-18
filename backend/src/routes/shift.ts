@@ -12,6 +12,7 @@ const createShiftSchema = z.object({
   startTime: z.string().min(1), // e.g., "09:00"
   endTime: z.string().min(1), // e.g., "18:00"
   breakMinutes: z.number().min(0).default(0),
+  businessId: z.string().uuid().optional(),
 });
 
 const updateShiftSchema = createShiftSchema.partial();
@@ -20,12 +21,15 @@ const assignEmployeesSchema = z.object({
   employeeIds: z.array(z.string().uuid()),
 });
 
-// GET /api/v1/shifts - Get all shifts with staff count
+// GET /api/v1/shifts - Get all shifts with staff count (optionally filtered by businessId)
 shiftRouter.get(
   '/',
-  async (_req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
+      const {businessId} = req.query;
+
       const shifts = await prisma.shift.findMany({
+        where: businessId ? {businessId: String(businessId)} : undefined,
         orderBy: {createdAt: 'desc'},
         include: {
           _count: {
@@ -42,6 +46,7 @@ shiftRouter.get(
         startTime: shift.startTime,
         endTime: shift.endTime,
         breakMinutes: shift.breakMinutes,
+        businessId: shift.businessId,
         createdAt: shift.createdAt.getTime(),
         staffCount: shift._count.employees,
       }));
@@ -88,6 +93,7 @@ shiftRouter.get(
         startTime: shift.startTime,
         endTime: shift.endTime,
         breakMinutes: shift.breakMinutes,
+        businessId: shift.businessId,
         createdAt: shift.createdAt.getTime(),
         staffCount: shift._count.employees,
         employees: shift.employees,

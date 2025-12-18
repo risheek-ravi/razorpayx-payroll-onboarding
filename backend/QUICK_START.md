@@ -45,6 +45,7 @@ vercel --prod
 ```
 
 Follow the prompts:
+
 - **Set up and deploy?** Yes
 - **Which scope?** (select your account)
 - **Link to existing project?** No
@@ -76,6 +77,7 @@ curl https://YOUR-PROJECT.vercel.app/health
 ```
 
 Expected response:
+
 ```json
 {
   "status": "ok",
@@ -94,10 +96,10 @@ Update your React Native app:
 ```typescript
 // src/config/api.ts
 const API_BASE_URL = __DEV__
-  ? 'http://10.0.2.2:3001/api/v1'  // Android emulator
-  : 'https://YOUR-PROJECT.vercel.app/api/v1';  // Production
+  ? 'http://10.0.2.2:3001/api/v1' // Android emulator
+  : 'https://YOUR-PROJECT.vercel.app/api/v1'; // Production
 
-export { API_BASE_URL };
+export {API_BASE_URL};
 ```
 
 ## 🎯 Your API Endpoints
@@ -110,6 +112,7 @@ export { API_BASE_URL };
 ## 🆘 Something Went Wrong?
 
 ### "Command not found: vercel"
+
 ```bash
 # Install globally
 npm install -g vercel
@@ -119,6 +122,7 @@ npx vercel --prod
 ```
 
 ### "Database connection failed"
+
 ```bash
 # Check if DATABASE_URL is set
 vercel env ls
@@ -128,6 +132,7 @@ vercel env add DATABASE_URL
 ```
 
 ### "Build failed"
+
 ```bash
 # Check logs
 vercel logs
@@ -153,4 +158,3 @@ vercel --prod
 ---
 
 **Need help?** Check the other documentation files or Vercel's support.
-

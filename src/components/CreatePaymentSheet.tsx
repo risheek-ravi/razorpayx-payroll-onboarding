@@ -102,6 +102,13 @@ export const CreatePaymentSheet: React.FC<CreatePaymentSheetProps> = ({
     if (paymentMode === 'UPI' && !upiId) {
       return;
     }
+    // Validate phone number if Phone mode is selected
+    if (
+      paymentMode === 'Phone' &&
+      (!phoneNumber || phoneNumber.length !== 10)
+    ) {
+      return;
+    }
     setShowSecurityModal(true);
   };
 
@@ -117,10 +124,13 @@ export const CreatePaymentSheet: React.FC<CreatePaymentSheetProps> = ({
       narration,
       paymentMode,
       phoneNumber:
-        paymentMode === 'UPI' || paymentMode === 'Bank Transfer'
+        paymentMode === 'UPI' ||
+        paymentMode === 'Bank Transfer' ||
+        paymentMode === 'Phone'
           ? phoneNumber
           : undefined,
       upiId: paymentMode === 'UPI' ? upiId : undefined,
+      mobileNumber: paymentMode === 'Phone' ? phoneNumber : undefined,
       date: formattedDate,
     });
     onClose();
@@ -277,7 +287,7 @@ export const CreatePaymentSheet: React.FC<CreatePaymentSheetProps> = ({
               <View style={styles.inputGroup}>
                 <Text style={styles.inputLabel}>Payment Mode</Text>
                 <View style={styles.paymentModeGrid}>
-                  {['Cash', 'UPI', 'Bank Transfer'].map(mode => (
+                  {['Cash', 'UPI', 'Phone', 'Bank Transfer'].map(mode => (
                     <TouchableOpacity
                       key={mode}
                       onPress={() => {
@@ -285,6 +295,12 @@ export const CreatePaymentSheet: React.FC<CreatePaymentSheetProps> = ({
                         if (mode === 'Cash') {
                           setPhoneNumber('');
                           setUpiId('');
+                        } else if (mode === 'Phone') {
+                          setUpiId(''); // Phone mode doesn't need UPI ID
+                          // Keep or set phone number from employee
+                          if (selectedEmployee) {
+                            setPhoneNumber(selectedEmployee.phoneNumber || '');
+                          }
                         }
                       }}
                       style={[
@@ -297,7 +313,7 @@ export const CreatePaymentSheet: React.FC<CreatePaymentSheetProps> = ({
                           paymentMode === mode &&
                             styles.paymentModeButtonTextActive,
                         ]}>
-                        {mode}
+                        {mode === 'Bank Transfer' ? 'Bank' : mode}
                       </Text>
                     </TouchableOpacity>
                   ))}
@@ -317,6 +333,31 @@ export const CreatePaymentSheet: React.FC<CreatePaymentSheetProps> = ({
                     placeholderTextColor="#9CA3AF"
                     autoCapitalize="none"
                   />
+                </View>
+              )}
+
+              {/* Phone Number for Mobile Payment - Show when Phone mode is selected */}
+              {paymentMode === 'Phone' && (
+                <View style={styles.inputGroup}>
+                  <Text style={styles.inputLabel}>
+                    Mobile Number for UPI Payment*
+                  </Text>
+                  <View style={styles.phoneInputContainer}>
+                    <Text style={styles.phonePrefix}>+91</Text>
+                    <TextInput
+                      style={styles.phoneInput}
+                      keyboardType="phone-pad"
+                      value={phoneNumber}
+                      onChangeText={setPhoneNumber}
+                      placeholder="Enter 10-digit mobile number"
+                      placeholderTextColor="#9CA3AF"
+                      maxLength={10}
+                    />
+                  </View>
+                  <Text style={styles.inputHint}>
+                    Payment will be sent to the bank account linked with this
+                    mobile number
+                  </Text>
                 </View>
               )}
 
@@ -356,13 +397,17 @@ export const CreatePaymentSheet: React.FC<CreatePaymentSheetProps> = ({
                 disabled={
                   !selectedEmployeeId ||
                   !amount ||
-                  (paymentMode === 'UPI' && !upiId)
+                  (paymentMode === 'UPI' && !upiId) ||
+                  (paymentMode === 'Phone' &&
+                    (!phoneNumber || phoneNumber.length !== 10))
                 }
                 style={[
                   styles.payButton,
                   (!selectedEmployeeId ||
                     !amount ||
-                    (paymentMode === 'UPI' && !upiId)) &&
+                    (paymentMode === 'UPI' && !upiId) ||
+                    (paymentMode === 'Phone' &&
+                      (!phoneNumber || phoneNumber.length !== 10))) &&
                     styles.payButtonDisabled,
                 ]}>
                 <Text
@@ -370,7 +415,9 @@ export const CreatePaymentSheet: React.FC<CreatePaymentSheetProps> = ({
                     styles.payButtonText,
                     (!selectedEmployeeId ||
                       !amount ||
-                      (paymentMode === 'UPI' && !upiId)) &&
+                      (paymentMode === 'UPI' && !upiId) ||
+                      (paymentMode === 'Phone' &&
+                        (!phoneNumber || phoneNumber.length !== 10))) &&
                       styles.payButtonTextDisabled,
                   ]}>
                   Pay & Save
@@ -590,6 +637,37 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#111827',
     backgroundColor: '#FFFFFF',
+  },
+  phoneInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#D1D5DB',
+    borderRadius: 12,
+    backgroundColor: '#FFFFFF',
+    overflow: 'hidden',
+  },
+  phonePrefix: {
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#6B7280',
+    backgroundColor: '#F9FAFB',
+    borderRightWidth: 1,
+    borderRightColor: '#E5E7EB',
+  },
+  phoneInput: {
+    flex: 1,
+    padding: 12,
+    fontSize: 14,
+    color: '#111827',
+  },
+  inputHint: {
+    fontSize: 11,
+    color: '#6B7280',
+    marginTop: 6,
+    fontStyle: 'italic',
   },
   footer: {
     padding: 16,

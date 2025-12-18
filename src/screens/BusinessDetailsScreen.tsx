@@ -11,7 +11,7 @@ import {
   Alert,
 } from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import Icon from 'react-native-vector-icons/Feather';
+// Icons replaced with emoji for better compatibility
 import {InputField} from '../components/InputField';
 import {WelcomeFlash} from '../components/WelcomeFlash';
 import {colors} from '../theme/colors';
@@ -116,7 +116,7 @@ export const BusinessDetailsScreen = ({navigation}: Props) => {
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity style={styles.backButton}>
-            <Icon name="arrow-left" size={24} color={colors.gray[800]} />
+            <Text style={styles.backIcon}>←</Text>
           </TouchableOpacity>
         </View>
 
@@ -211,6 +211,10 @@ const styles = StyleSheet.create({
   backButton: {
     padding: 8,
     marginLeft: -8,
+  },
+  backIcon: {
+    fontSize: 22,
+    color: colors.gray[800],
   },
   scrollView: {
     flex: 1,

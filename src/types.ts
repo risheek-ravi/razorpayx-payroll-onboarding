@@ -71,6 +71,7 @@ export interface Shift {
   startTime: string;
   endTime: string;
   breakMinutes: number;
+  businessId?: string;
   createdAt?: number;
 }
 

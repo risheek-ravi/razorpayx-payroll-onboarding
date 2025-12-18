@@ -20,6 +20,7 @@ import {
   getLatestBusinessDetails,
   createUPIPayout,
   createBankPayout,
+  createMobilePayout,
 } from '../services/dbService';
 import {savePayment, getPayments} from '../services/paymentService';
 import {getRazorpayCredentials} from '../config/razorpay';
@@ -123,8 +124,8 @@ export const FinalizePayrollScreen: React.FC<Props> = ({navigation}) => {
   useEffect(() => {
     const init = async () => {
       try {
-        const empData = await getEmployees();
         const bizData = await getLatestBusinessDetails();
+        const empData = await getEmployees(bizData?.id);
         setEmployees(empData);
         setBusinessDetails(bizData);
 
@@ -247,9 +248,10 @@ export const FinalizePayrollScreen: React.FC<Props> = ({navigation}) => {
       let razorpayPayoutId: string | undefined;
       let paymentStatus: 'pending' | 'completed' | 'failed' = 'completed';
 
-      // If UPI ID provided for UPI or phone number provided for Bank Transfer, make Razorpay payout API call
+      // If UPI ID provided for UPI, phone number for Phone mode, or phone number for Bank Transfer, make Razorpay payout API call
       if (
         (data.paymentMode === 'UPI' && data.upiId) ||
+        (data.paymentMode === 'Phone' && data.mobileNumber) ||
         (data.paymentMode === 'Bank Transfer' && data.phoneNumber)
       ) {
         try {
@@ -300,6 +302,50 @@ export const FinalizePayrollScreen: React.FC<Props> = ({navigation}) => {
               Alert.alert(
                 'Payout Initiated',
                 `UPI payout of ₹${data.amount} has been initiated to ${data.upiId}`,
+              );
+            }
+          } else if (data.paymentMode === 'Phone') {
+            // Mobile/Phone Payout - Use provided mobile number
+            if (!data.mobileNumber || data.mobileNumber.length !== 10) {
+              Alert.alert(
+                'Invalid Mobile Number',
+                'A valid 10-digit mobile number is required for Phone payments. Payment will be saved but not processed.',
+              );
+              paymentStatus = 'pending';
+            } else {
+              const payoutResponse = await createMobilePayout(
+                razorpayCredentials.apiKey,
+                razorpayCredentials.apiSecret,
+                {
+                  accountNumber: razorpayCredentials.accountNumber,
+                  amount: data.amount,
+                  mobileNumber: data.mobileNumber,
+                  accountHolderName: employee.fullName,
+                  contactName: employee.fullName,
+                  contactEmail: businessDetails.businessEmail,
+                  contactPhone: data.mobileNumber,
+                  referenceId: `PAY-${Date.now()}`,
+                  narration:
+                    data.narration ||
+                    `${
+                      createPaymentType === 'one-time' ? 'Bonus' : 'Advance'
+                    } Payment`,
+                  notes: {
+                    employee_id: employee.id,
+                    payment_type: createPaymentType,
+                    business_id: businessDetails.id,
+                  },
+                },
+              );
+
+              razorpayPayoutId = payoutResponse.id;
+              paymentStatus =
+                payoutResponse.status === 'processed' ? 'completed' : 'pending';
+
+              console.log('Mobile Payout successful:', payoutResponse);
+              Alert.alert(
+                'Payout Initiated',
+                `UPI payout of ₹${data.amount} has been initiated to mobile number +91 ${data.mobileNumber}`,
               );
             }
           } else if (data.paymentMode === 'Bank Transfer') {
@@ -375,8 +421,9 @@ export const FinalizePayrollScreen: React.FC<Props> = ({navigation}) => {
         type: createPaymentType,
         amount: data.amount,
         paymentMode: data.paymentMode,
-        phoneNumber: data.phoneNumber,
+        phoneNumber: data.phoneNumber || data.mobileNumber, // Use mobileNumber for Phone mode
         upiId: data.upiId, // Save UPI ID
+        mobileNumber: data.mobileNumber, // Save mobile number for Phone mode
         narration: data.narration,
         status: paymentStatus,
         date: data.date,

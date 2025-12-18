@@ -143,10 +143,13 @@ export const updatePayrollUsage = async (
 // ==================== SHIFT OPERATIONS ====================
 
 /**
- * Gets all shifts with staff count
+ * Gets all shifts with staff count, optionally filtered by businessId
  */
-export const getShifts = async (): Promise<ShiftWithStaffCount[]> => {
-  return api.get<ShiftWithStaffCount[]>('/shifts');
+export const getShifts = async (
+  businessId?: string,
+): Promise<ShiftWithStaffCount[]> => {
+  const query = businessId ? `?businessId=${businessId}` : '';
+  return api.get<ShiftWithStaffCount[]>(`/shifts${query}`);
 };
 
 /**
@@ -401,6 +404,56 @@ export const createBankPayout = async (
         name: params.beneficiaryName,
         ifsc: params.ifscCode,
         account_number: params.beneficiaryAccountNumber,
+      },
+      contact: {
+        name: params.contactName,
+        email: params.contactEmail,
+        contact: params.contactPhone,
+        type: 'employee',
+        reference_id: params.referenceId,
+        notes: params.notes,
+      },
+    },
+    queue_if_low_balance: true,
+    reference_id: params.referenceId,
+    narration: params.narration || 'Salary Payment',
+    notes: params.notes,
+  };
+
+  return createRazorpayPayout(apiKey, apiSecret, payoutData);
+};
+
+/**
+ * Helper function to create a Mobile/Phone payout
+ * This uses the mobile fund_account type for UPI payments via phone number
+ */
+export const createMobilePayout = async (
+  apiKey: string,
+  apiSecret: string,
+  params: {
+    accountNumber: string;
+    amount: number;
+    mobileNumber: string;
+    accountHolderName: string;
+    contactName: string;
+    contactEmail?: string;
+    contactPhone: string;
+    referenceId?: string;
+    narration?: string;
+    notes?: Record<string, string>;
+  },
+): Promise<RazorpayPayoutResponse> => {
+  const payoutData: RazorpayPayoutRequest = {
+    account_number: params.accountNumber,
+    amount: params.amount * 100, // Convert to paise
+    currency: 'INR',
+    mode: 'UPI',
+    purpose: 'salary',
+    fund_account: {
+      account_type: 'mobile',
+      mobile: {
+        number: params.mobileNumber,
+        account_holder_name: params.accountHolderName,
       },
       contact: {
         name: params.contactName,

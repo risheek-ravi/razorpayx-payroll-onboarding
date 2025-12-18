@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/Feather';
 import {colors} from '../theme/colors';
 import {StaffType} from '../types';
 
@@ -42,7 +41,7 @@ export const StaffTypeModal = ({
           <View style={styles.header}>
             <Text style={styles.title}>Select Staff Type</Text>
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <Icon name="x" size={24} color={colors.gray[500]} />
+              <Text style={styles.closeIcon}>✕</Text>
             </TouchableOpacity>
           </View>
 
@@ -51,16 +50,14 @@ export const StaffTypeModal = ({
               isSelected={selected === 'full_time'}
               onPress={() => setSelected('full_time')}
               title="Full Time Employee"
-              iconName="briefcase"
-              iconColor={colors.orange[500]}
+              emoji="💼"
               bgColor={colors.orange[50]}
             />
             <SelectionCard
               isSelected={selected === 'contract'}
               onPress={() => setSelected('contract')}
               title="Contract Employee"
-              iconName="clock"
-              iconColor={colors.teal[600]}
+              emoji="⏰"
               bgColor={colors.teal[50]}
             />
           </View>
@@ -91,8 +88,7 @@ interface SelectionCardProps {
   isSelected: boolean;
   onPress: () => void;
   title: string;
-  iconName: string;
-  iconColor: string;
+  emoji: string;
   bgColor: string;
 }
 
@@ -100,8 +96,7 @@ const SelectionCard = ({
   isSelected,
   onPress,
   title,
-  iconName,
-  iconColor,
+  emoji,
   bgColor,
 }: SelectionCardProps) => {
   return (
@@ -110,7 +105,7 @@ const SelectionCard = ({
       onPress={onPress}
       activeOpacity={0.7}>
       <View style={[styles.iconContainer, {backgroundColor: bgColor}]}>
-        <Icon name={iconName} size={40} color={iconColor} />
+        <Text style={styles.emoji}>{emoji}</Text>
       </View>
       <Text style={[styles.cardTitle, isSelected && styles.cardTitleSelected]}>
         {title}
@@ -147,6 +142,10 @@ const styles = StyleSheet.create({
   closeButton: {
     padding: 4,
   },
+  closeIcon: {
+    fontSize: 20,
+    color: colors.gray[500],
+  },
   optionsContainer: {
     flexDirection: 'row',
     padding: 24,
@@ -171,6 +170,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 12,
+  },
+  emoji: {
+    fontSize: 40,
   },
   cardTitle: {
     fontSize: 14,
@@ -200,4 +202,3 @@ const styles = StyleSheet.create({
     color: colors.gray[400],
   },
 });
-
